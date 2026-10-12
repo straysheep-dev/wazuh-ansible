@@ -1,0 +1,21 @@
+name: Sync Upstream Tags
+on:
+  schedule:
+    - cron: '0 0 * * 1'
+  workflow_dispatch: {}  # This allows us to manually run the flow on-demand
+
+permissions: {}  # Deny everything by default, grant per job
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7.0.1   # We could pin by SHA instead, dependabot will keep this updated
+        with:
+          fetch-depth: 0
+      - name: Mirror Upstream Tags
+        env:
+          UPSTREAM: https://github.com/wazuh/wazuh-ansible.git
+        run: git fetch "$UPSTREAM" --tags && git push origin --tags
